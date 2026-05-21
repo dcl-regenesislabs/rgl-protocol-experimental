@@ -25,8 +25,8 @@ const TABS: TabConfig[] = [
     id: 'offset',
     label: 'SCROLL TO OFFSET',
     image: 'assets/examples/03-scroll-to-offset.png',
-    imageW: 741,
-    imageH: 802
+    imageW: 765,
+    imageH: 850
   },
   {
     id: 'visible',
@@ -234,18 +234,25 @@ const ScrollToOffsetDemo = () => {
           onMouseDown={() => setTarget({ x: 0, y: 0 })}
         />
         <Button
-          value="y = 300"
+          value="y = 0.25"
           variant="secondary"
           fontSize={11}
           uiTransform={{ width: 84, height: 28, margin: '0 4 0 0' }}
-          onMouseDown={() => setTarget({ x: 0, y: 300 })}
+          onMouseDown={() => setTarget({ x: 0, y: 0.25 })}
         />
         <Button
-          value="y = 600"
+          value="y = 0.5"
           variant="secondary"
           fontSize={11}
           uiTransform={{ width: 84, height: 28, margin: '0 4 0 0' }}
-          onMouseDown={() => setTarget({ x: 0, y: 600 })}
+          onMouseDown={() => setTarget({ x: 0, y: 0.5 })}
+        />
+        <Button
+          value="y = 1"
+          variant="secondary"
+          fontSize={11}
+          uiTransform={{ width: 76, height: 28, margin: '0 4 0 0' }}
+          onMouseDown={() => setTarget({ x: 0, y: 1 })}
         />
         <Button
           value="Release"
@@ -257,7 +264,9 @@ const ScrollToOffsetDemo = () => {
       </UiEntity>
       <Label
         value={`scrollPosition = ${
-          target === undefined ? 'undefined' : `{ x: ${target.x}, y: ${target.y} }`
+          target === undefined
+            ? 'undefined'
+            : `{ x: ${target.x.toFixed(2)}, y: ${target.y.toFixed(2)} }   (normalized 0..1)`
         }`}
         fontSize={11}
         color={Color4.fromHexString('#7cffb2ff')}
@@ -300,7 +309,7 @@ const ScrollVisibleDemo = () => {
 const ReadScrollDemo = () => (
   <UiEntity uiTransform={{ width: '100%', height: '100%', flexDirection: 'column' }}>
     <Label
-      value={`UiScrollResult → { x: ${userScroll.x.toFixed(0)}, y: ${userScroll.y.toFixed(0)} }`}
+      value={`UiScrollResult → { x: ${userScroll.x.toFixed(3)}, y: ${userScroll.y.toFixed(3)} }   (normalized 0..1)`}
       fontSize={13}
       color={Color4.fromHexString('#7cffb2ff')}
       uiTransform={{ width: '100%', height: 24, margin: '0 0 4 0' }}
