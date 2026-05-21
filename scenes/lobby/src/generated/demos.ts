@@ -30,7 +30,7 @@ export const DEMOS: Demo[] = [
     },
     "parcels": 1,
     "spawn": {
-      "x": 17.5,
+      "x": 1.5,
       "z": 1.5
     }
   }
