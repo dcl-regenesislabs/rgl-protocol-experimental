@@ -1,0 +1,12 @@
+{
+  "name": "scrollable-ui",
+  "version": "1.0.0",
+  "description": "Demo of the scrollable UI proposed in decentraland/protocol#412",
+  "scripts": {
+    "start": "sdk-commands start",
+    "build": "sdk-commands build"
+  },
+  "devDependencies": {
+    "@dcl/sdk": "7.22.6-25007982108.commit-83012ab"
+  }
+}

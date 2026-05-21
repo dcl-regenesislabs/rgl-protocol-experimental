@@ -1,0 +1,6 @@
+{
+  "folders": [
+    { "path": "scenes/lobby" },
+    { "path": "scenes/scrollable-ui" }
+  ]
+}

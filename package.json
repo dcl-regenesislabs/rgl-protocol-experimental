@@ -1,17 +1,22 @@
 {
   "name": "rgl-protocol-experimental",
   "version": "1.0.0",
-  "description": "RGL Protocol — experimental scene deployed to rglprotocol.dcl.eth",
+  "private": true,
+  "description": "RGL Protocol — experimental Decentraland scenes deployed to rglprotocol.dcl.eth",
+  "workspaces": [
+    "scenes/lobby",
+    "scenes/scrollable-ui"
+  ],
   "scripts": {
-    "start": "sdk-commands start",
-    "build": "sdk-commands build",
+    "start": "sdk-commands start --multi-scene",
+    "build": "npm run build --workspaces",
     "deploy": "sdk-commands deploy --target-content https://worlds-content-server.decentraland.org --multi-scene",
-    "upgrade-sdk": "npm install --save-dev @dcl/sdk@latest",
-    "upgrade-sdk:next": "npm install --save-dev @dcl/sdk@next"
+    "generate-code-images": "node scripts/generate-code-images.mjs",
+    "upgrade-sdk:protocol-squad": "npm install --save-dev @dcl/sdk@protocol-squad && npm install --save-dev @dcl/sdk@protocol-squad --workspaces"
   },
   "devDependencies": {
-    "@dcl/js-runtime": "latest",
-    "@dcl/sdk": "latest"
+    "@dcl/sdk": "7.22.6-25007982108.commit-83012ab",
+    "carbon-now-cli": "^2.1.0"
   },
   "engines": {
     "node": ">=16.0.0",

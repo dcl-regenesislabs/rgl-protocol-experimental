@@ -1,0 +1,24 @@
+{
+  "rglprotocol": {
+    "theme": "one-dark",
+    "backgroundColor": "rgba(23, 21, 26, 1)",
+    "windowTheme": "none",
+    "windowControls": true,
+    "fontFamily": "JetBrains Mono",
+    "fontSize": "14px",
+    "lineNumbers": true,
+    "firstLineNumber": 1,
+    "selectedLines": "*",
+    "dropShadow": true,
+    "dropShadowOffsetY": "20px",
+    "dropShadowBlurRadius": "68px",
+    "widthAdjustment": true,
+    "lineHeight": "150%",
+    "paddingVertical": "40px",
+    "paddingHorizontal": "40px",
+    "squaredImage": false,
+    "watermark": false,
+    "exportSize": "2x",
+    "type": "png"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "ecs7": true,
+  "runtimeVersion": "7",
+  "display": {
+    "title": "Scrollable UI Demo",
+    "description": "Demo of the scrollable UI feature proposed in decentraland/protocol#412",
+    "favicon": "favicon_asset"
+  },
+  "owner": "dcl-regenesislabs",
+  "contact": {
+    "name": "dcl-regenesislabs",
+    "email": ""
+  },
+  "main": "bin/index.js",
+  "tags": [],
+  "worldConfiguration": {
+    "name": "rglprotocol.dcl.eth"
+  },
+  "scene": {
+    "parcels": [
+      "1,0"
+    ],
+    "base": "1,0"
+  },
+  "spawnPoints": [
+    {
+      "name": "spawn1",
+      "default": true,
+      "position": {
+        "x": [16, 19],
+        "y": [0, 0],
+        "z": [0, 3]
+      },
+      "cameraTarget": {
+        "x": 24,
+        "y": 1,
+        "z": 8
+      }
+    }
+  ],
+  "featureToggles": {
+    "voiceChat": "enabled",
+    "portableExperiences": "enabled"
+  }
+}
