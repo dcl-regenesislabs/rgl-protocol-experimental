@@ -18,7 +18,7 @@
     "paddingHorizontal": "40px",
     "squaredImage": false,
     "watermark": false,
-    "exportSize": "2x",
+    "exportSize": "1x",
     "type": "png"
   }
 }
