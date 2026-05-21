@@ -7,6 +7,7 @@
     "build": "sdk-commands build"
   },
   "devDependencies": {
-    "@dcl/sdk": "7.22.6-25007982108.commit-83012ab"
+    "@dcl/sdk": "7.22.6-25007982108.commit-83012ab",
+    "@dcl/js-runtime": "7.22.6-25007982108.commit-83012ab"
   }
 }

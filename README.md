@@ -1,265 +1,123 @@
-# SDK7 Template scene
+# rgl-protocol-experimental
 
-## Try it out
+A multi-scene Decentraland world that demonstrates experimental Decentraland **protocol** features as they land in the SDK, one parcel per demo.
 
-**Previewing the scene**
+- **World:** [`rglprotocol.dcl.eth`](https://decentraland.org/play/?realm=rglprotocol.dcl.eth)
+- **SDK:** `@dcl/sdk` pinned to the `protocol-squad` build (see [SDK pinning](#sdk-pinning))
+- **Runtime:** SDK7
 
-1. Download this repository.
-
-2. Install the [Decentraland Editor](https://docs.decentraland.org/creator/development-guide/sdk7/editor/)
-
-3. Open a Visual Studio Code window on this scene's root folder. Not on the root folder of the whole repo, but instead on this sub-folder that belongs to the scene.
-
-4. Open the Decentraland Editor tab, and press **Run Scene**
-
-Alternatively, you can use the command line. Inside this scene root directory run:
+## Repo layout
 
 ```
-npm run start
+.
+├── dcl-workspace.json           # lists scenes the deploy tool publishes
+├── package.json                 # npm workspace root + top-level scripts
+├── .github/workflows/
+│   ├── ci.yml                   # build verification on every push/PR
+│   └── deploy.yml               # deploys to rglprotocol.dcl.eth on push to main
+└── scenes/
+    ├── lobby/                   # parcel 0,0  — index of available demos
+    └── scrollable-ui/           # parcel 1,0  — demo of protocol#412
 ```
 
-## What's new on SDK 7
+The lobby is the entry point (default spawn). Each demo lives on its own parcel; players walk between them.
 
-Below are some basic concepts about the SDK 7 syntax. For more details, see the [Documentation site](https://docs.decentraland.org/creator/).
+## Current demos
 
-### Entities
+| Scene | Parcel | Feature exercised | Reference |
+|---|---|---|---|
+| `lobby` | `0,0` | n/a — index UI | — |
+| `scrollable-ui` | `1,0` | `UiTransform.overflow=scroll`, `scrollPosition` (both `Vector2` and `elementId` reference), `scrollVisible`, `elementId`, `UiScrollResult` readback | [decentraland/protocol#412](https://github.com/decentraland/protocol/pull/412) |
 
-An Entity is just an ID. It is an abstract concept not represented by any data structure. There is no "class Entity". Just a number that is used as a reference to group different components.
+## Local development
 
-```ts
-const myEntity = engine.addEntity()
-console.console.log(myEntity) // 100
-
-// Remove Entity
-engine.removeEntity(myEntity)
+```bash
+npm install            # installs all workspace deps (hoisted to root)
+npm run start          # previews all scenes together (multi-scene)
+npm run build          # builds every scene (bin/index.js per scene)
 ```
 
-> Note: Note that it's no longer necessary to separately create an entity and then add it to the engine, this is all done in a single act.
+`npm run start` opens the local preview with all scenes loaded — walk from `0,0` east to `1,0` to exercise the demos.
 
-### Components
+## Deploying
 
-The component is just a data container, WITHOUT any functions.
+CI deploys automatically on every push to `main`. To deploy manually:
 
-To add a component to an entity, the entry point is now the component type, not the entity.
-
-```ts
-Transform.create(myEntity, <params>)
+```bash
+DCL_PRIVATE_KEY=0x... npm run deploy
 ```
 
-This is different from how the syntax was in SDK6:
+Under the hood this runs:
 
-```ts
-// OLD Syntax
-myEntity.addComponent(Transform)
+```
+sdk-commands deploy \
+  --target-content https://worlds-content-server.decentraland.org \
+  --multi-scene
 ```
 
-#### Base Components
+### World ACL
 
-Base components already come packed as part of the SDK. Most of them interact directly with the renderer in some way. This is the full list of currently supported base components:
+The deployer address must be authorized on the World ACL for `rglprotocol.dcl.eth`. The ENS owner grants access with:
 
-- Transform
-- Animator
-- Material
-- MeshRenderer
-- MeshCollider
-- AudioSource
-- AudioStream
-- AvatarAttach
-- AvatarModifierArea
-- AvatarShape
-- Billboard
-- CameraMode
-- CameraModeArea
-- GltfContainer
-- NftShape
-- PointerEventsResult
-- PointerHoverFeedback
-- PointerLock
-- Raycast
-- RaycastResult
-- TextShape
-- VisibilityComponent
-
-```ts
-const entity = engine.addEntity()
-Transfrom.create(entity, {
-  position: Vector3.create(12, 1, 12)
-  scale: Vector3.One(),
-  rotation: Quaternion.Identity()
-})
-GltfContainer.create(zombie, {
-  withCollisions: true,
-  isPointerBlocker: true,
-  visible: true,
-  src: 'models/zombie.glb'
-})
+```bash
+npx @dcl/sdk-commands world-acl grant <deployer-address> --world-name rglprotocol.dcl.eth
 ```
 
-#### Custom Components
+### CI secrets
 
-Each component must have a unique number ID. If a number is repeated, the engine or another player receiving updates might apply changes to the wrong component. Note that numbers 1-2000 are reserved for the base components.
+- `DCL_PRIVATE_KEY` — Ethereum private key for the deployer wallet. Configured in `Settings → Secrets and variables → Actions`. The matching public address must be on the World ACL above.
 
-When creating a custom component you declare the schema of the data to be stored in it. Every field in a component MUST belong to one of the built-in special schemas provided as part of the SDK. These special schemas include extra functionality that allows them to be serialized/deserialized.
+## Adding a new demo
 
-Currently, the names of these special schemas are:
+1. Create `scenes/<demo-name>/` with `package.json`, `scene.json`, `tsconfig.json`, `.dclignore`, and `src/index.ts` (+ optional `src/ui.tsx`).
+2. In the scene's `scene.json`:
+   - Set `worldConfiguration.name` to `rglprotocol.dcl.eth`.
+   - Set `scene.parcels` / `scene.base` to a free parcel (current grid uses `0,0` and `1,0` — pick `2,0`, `0,1`, etc.).
+   - Fill in `display.title`, `display.description`, and `spawnPoints[0].position` — these feed the lobby's auto-generated demo list.
+3. Add the path to `dcl-workspace.json` under `folders`.
+4. Pin the SDK in the new scene's `package.json` to match the rest of the workspace (`7.22.6-…commit-83012ab`).
 
-##### Primitives
+The lobby panel is generated from every `scenes/*/scene.json` (excluding `lobby`) — see [Lobby demo generator](#lobby-demo-generator). `npm run start`, `build`, and `deploy` regenerate it automatically.
 
-1. `Schemas.Boolean`: true or false (serialized as a Byte)
-2. `Schemas.String`: UTF8 strings (serialized length and content)
-3. `Schemas.Float`: single precission float
-4. `Schemas.Double`: double precision float
-5. `Schemas.Byte`: a single byte, integer with range 0..255
-6. `Schemas.Short`: 16 bits signed-integer with range -32768..32767
-7. `Schemas.Int`: 32 bits signed-integer with range -2³¹..(2³¹-1)
-8. `Schemas.Int64`: 64 bits signed-integer
-9. `Schemas.Number`: an alias to Schemas.Float
+`npm install` at the root will pick up the new workspace automatically.
 
-##### Specials
+## Lobby demo generator
 
-10. `Schemas.Entity`: a wrapper to int32 that casts the type to `Entity`
-11. `Schemas.Vector3`: a Vector3 with { x, y, z }
-12. `Schemas.Quaternion`: a Quaternion with { x, y, z, w}
-13. `Schemas.Color3`: a Color3 with { r, g, b }
-14. `Schemas.Color4`: a Colo4 with { r, g, b, a }
+`scripts/generate-lobby-demos.mjs` parses every `scenes/*/scene.json` (excluding `lobby`) and writes `scenes/lobby/src/generated/demos.ts`. Each card on the lobby panel — title, description, target parcel, spawn-centre coordinates — is sourced from that scene's own `scene.json`, and the **TELEPORT →** button uses `teleportTo({ worldCoordinates })` against the base parcel.
 
-##### Schema generator
-
-15. `Schemas.Enum`: passing the serialization Schema and the original Enum as generic
-16. `Schemas.Array`: passing the item Schema
-17. `Schemas.Map`: passing a Map with Schemas as values
-18. `Schemas.Optional`: passing the schema to serialize
-
-Below are some examples of how these schemas can be declared.
-
-```ts
-const object = Schemas.Map({ x: Schemas.Int }) // { x: 1 }
-
-const array = Schemas.Map(Schemas.Int) // [1,2,3,4]
-
-const objectArray = Schemas.Array(Schemas.Map({ x: Schemas.Int })) // [{ x: 1 }, { x: 2 }]
-
-const BasicSchemas = Schemas.Map({
-  x: Schemas.Int,
-  y: Schemas.Float,
-  text: Schemas.String,
-  flag: Schemas.Boolean
-}) // { x: 1, y: 1.412, text: 'ecs 7 text', flag: true }
-
-const VelocitySchema = Schemas.Map({
-  x: Schemas.Float,
-  y: Schemas.Float,
-  z: Schemas.Float
-})
+```bash
+npm run generate-lobby-demos
 ```
 
-To then create a custom component using one of these schemas, use the following syntax:
+Runs automatically as `prestart` / `prebuild` / `predeploy`; the output file is committed so CI doesn't need a separate generation step.
 
-```ts
-export const myCustomComponent = engine.defineComponent(MyDataSchema, ComponentID)
+## Code snapshots
+
+Each scene can ship illustrative code snippets as rendered images (used in the lobby panel, READMEs, social posts, etc.). Source snippets live next to the scene; PNGs are written into the scene's deployed `assets/` so the world can reference them.
+
+```
+scenes/<scene>/examples/example1.ts          # source — committed, not deployed
+scenes/<scene>/assets/examples/example1.png  # rendered image — deployed with the scene
 ```
 
-For contrast, below is an example of how components were constructed prior to SDK 7.
+Generate (or regenerate) every image with:
 
-```ts
-/**
- * OLD SDK
- */
-
-// Define Component
-@Component('velocity')
-export class Velocity extends Vector3 {
-  constructor(x: number, y: number, z: number) {
-    super(x, y, z)
-  }
-}
-// Create entity
-const wheel = new Entity()
-
-// Create instance of component with default values
-wheel.addComponent(new WheelSpin())
-
-/**
- * ECS 7
- */
-// Define Component
-const VelocitySchema = Schemas.Map({
-  x: Schemas.Float,
-  y: Schemas.Float,
-  z: Schemas.Float
-})
-const COMPONENT_ID = 2008
-const VelocityComponent = engine.defineComponent(Velocity, COMPONENT_ID)
-// Create Entity
-const entity = engine.addEntity()
-
-// Create instance of component
-VelocityComponent.create(entity, { x: 1, y: 2.3, z: 8 })
-
-// Remove instance of a component
-VelocityComponent.deleteFrom(entity)
+```bash
+npm run generate-code-images
 ```
 
-### Systems
+The script scans `scenes/*/examples/*.{ts,tsx,js,jsx}` and writes each PNG to the matching scene's `assets/examples/`. Output filenames mirror source filenames (`example1.ts` → `example1.png`); re-running overwrites in place.
 
-Systems are pure & simple functions.
-All your logic comes here.
-A system might hold data which is relevant to the system itself, but no data about the entities it processes.
+Rendering uses [`carbon-now-cli`](https://github.com/mixn/carbon-now-cli) with a shared preset in `carbon-now.json` (one-dark theme, JetBrains Mono, 2x export). Adjust that file to change styling for all snippets at once. Carbon-now drives a headless Chromium via Playwright, so the first run downloads ~150 MB of browser binaries into `~/.cache/ms-playwright/`.
 
-To add a system, all you need to do is define a function and add it to the engine. The function may optionally include a `dt` parameter with the delay since last frame, just like in prior versions of the SDK.
+To add a snippet to a scene: drop a new file into that scene's `examples/` folder and re-run the command. No per-scene wiring needed.
 
-```ts
-// Basic system
-function mySystem() {
-  console.log('my system is running')
-}
+## SDK pinning
 
-engine.addSystem(mySystem)
+We pin `@dcl/sdk` to the exact `protocol-squad` build rather than `latest`/`next` because the demos depend on protocol changes that aren't on `main` yet. Bumping is intentional:
 
-// System with dt
-function mySystemDT(dt: number) {
-  console.log('time since last frame:  ', dt)
-}
-
-engine.addSystem(mySystemDT)
+```bash
+npm run upgrade-sdk:protocol-squad
 ```
 
-#### Query components
-
-The way to group/query the components inside systems is using the method getEntitiesWith.
-`engine.getEntitiesWith(...components)`.
-
-```ts
-function physicsSystem(dt: number) {
-  for (const [entity, transform, velocity] of engine.getEntitiesWith(Transform, Velocity)) {
-    // transform & velocity are read only components.
-    if (transform.position.x === 10) {
-      // To update a component, you need to call the `.mutable` method
-      const mutableVelocity = VelocityComponent.getMutable(entity)
-      mutableVelocity.x += 1
-    }
-  }
-}
-
-// Add system to the engine
-engine.addSystem(physicsSystem)
-
-// Remove system
-engine.removeSystem(physicsSystem)
-```
-
-### Mutability
-
-Mutability is now an important distinction. We can choose to deal with mutable or with immutable versions of a component. We should use `getMutable` only when we plan to make changes to a component. Dealing with immutable versions of components results in a huge gain in performance.
-
-The `.get()` function in a component returns an immutable version of the component. You can only read its values, but can't change any of the properties on it.
-
-```ts
-const immutableTransform = Transform.get(myEntity)
-```
-
-To fetch the mutable version of a component, call it via `ComponentDefinition.getMutable()`. For example:
-
-```ts
-const mutableTransform = Transform.getMutable(myEntity)
-```
+This refreshes the SDK in both the root and every scene's `package.json`, then re-pins to whatever exact version `protocol-squad` resolves to at the time.

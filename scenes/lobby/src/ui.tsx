@@ -1,35 +1,33 @@
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Label, ReactEcsRenderer, UiEntity } from '@dcl/sdk/react-ecs'
-
-type Demo = {
-  name: string
-  description: string
-  parcel: string
-  direction: string
-}
-
-const DEMOS: Demo[] = [
-  {
-    name: 'Scrollable UI',
-    description:
-      'New UiTransform fields from decentraland/protocol#412 — overflow=scroll, scrollPosition, scrollVisible, elementId, and UiScrollResult readback.',
-    parcel: '1,0',
-    direction: 'walk east →'
-  }
-]
+import { teleportTo } from '~system/RestrictedActions'
+import { DEMOS, type Demo } from './generated/demos'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(LobbyUi)
 }
 
+const directionLabel = (base: { x: number; y: number }) => {
+  const parts: string[] = []
+  if (base.x > 0) parts.push(`${base.x === 1 ? '' : `${base.x} `}east`)
+  else if (base.x < 0) parts.push(`${base.x === -1 ? '' : `${Math.abs(base.x)} `}west`)
+  if (base.y > 0) parts.push(`${base.y === 1 ? '' : `${base.y} `}north`)
+  else if (base.y < 0) parts.push(`${base.y === -1 ? '' : `${Math.abs(base.y)} `}south`)
+  return parts.length === 0 ? 'here' : `${parts.join(' / ')} →`
+}
+
+const onTeleport = (demo: Demo) => () => {
+  void teleportTo({ worldCoordinates: { x: demo.base.x, y: demo.base.y } })
+}
+
 const LobbyUi = () => (
   <UiEntity
     uiTransform={{
-      width: 580,
+      width: 620,
       height: 'auto',
       positionType: 'absolute',
       position: { top: '12%', left: '50%' },
-      margin: '0 0 0 -290px',
+      margin: '0 0 0 -310px',
       flexDirection: 'column',
       padding: 20
     }}
@@ -42,41 +40,77 @@ const LobbyUi = () => (
       uiTransform={{ width: '100%', height: 36 }}
     />
     <Label
-      value="Walk to each parcel to explore experimental Decentraland protocol features."
+      value="Walk to each parcel — or use the teleport button — to explore experimental Decentraland protocol features."
       fontSize={13}
       color={Color4.fromHexString('#aaaaaaff')}
       uiTransform={{ width: '100%', height: 22, margin: '0 0 14 0' }}
     />
-    {DEMOS.map((d) => (
+    {DEMOS.map((demo) => (
       <UiEntity
-        key={d.name}
+        key={demo.scene}
         uiTransform={{
           width: '100%',
-          height: 100,
-          flexDirection: 'column',
+          height: 'auto',
+          flexDirection: 'row',
           padding: 12,
           margin: '0 0 8 0'
         }}
         uiBackground={{ color: Color4.create(0.1, 0.15, 0.22, 1) }}
       >
-        <Label
-          value={d.name}
-          fontSize={18}
-          color={Color4.White()}
-          uiTransform={{ width: '100%', height: 26 }}
-        />
-        <Label
-          value={d.description}
-          fontSize={12}
-          color={Color4.fromHexString('#bbbbbbff')}
-          uiTransform={{ width: '100%', height: 36, margin: '2 0' }}
-        />
-        <Label
-          value={`Parcel ${d.parcel}  —  ${d.direction}`}
-          fontSize={12}
-          color={Color4.fromHexString('#7cffb2ff')}
-          uiTransform={{ width: '100%', height: 18 }}
-        />
+        <UiEntity
+          uiTransform={{
+            width: '70%',
+            height: 'auto',
+            flexDirection: 'column'
+          }}
+        >
+          <Label
+            value={demo.title}
+            fontSize={18}
+            color={Color4.White()}
+            uiTransform={{ width: '100%', height: 26 }}
+          />
+          <Label
+            value={demo.description}
+            fontSize={12}
+            color={Color4.fromHexString('#bbbbbbff')}
+            uiTransform={{ width: '100%', height: 36, margin: '2 0' }}
+          />
+          <Label
+            value={`Parcel ${demo.base.x},${demo.base.y}  —  ${directionLabel(demo.base)}`}
+            fontSize={12}
+            color={Color4.fromHexString('#7cffb2ff')}
+            uiTransform={{ width: '100%', height: 18 }}
+          />
+        </UiEntity>
+        <UiEntity
+          uiTransform={{
+            width: '30%',
+            height: 80,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 6
+          }}
+        >
+          <UiEntity
+            uiTransform={{
+              width: '100%',
+              height: 56,
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+            uiBackground={{ color: Color4.fromHexString('#7cffb2ff') }}
+            onMouseDown={onTeleport(demo)}
+          >
+            <Label
+              value="TELEPORT →"
+              fontSize={14}
+              color={Color4.fromHexString('#04140aff')}
+              uiTransform={{ width: '100%', height: 20 }}
+              textAlign="middle-center"
+            />
+          </UiEntity>
+        </UiEntity>
       </UiEntity>
     ))}
   </UiEntity>

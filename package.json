@@ -8,9 +8,13 @@
     "scenes/scrollable-ui"
   ],
   "scripts": {
+    "prestart": "npm run generate-lobby-demos",
     "start": "sdk-commands start --multi-scene",
+    "prebuild": "npm run generate-lobby-demos",
     "build": "npm run build --workspaces",
+    "predeploy": "npm run generate-lobby-demos",
     "deploy": "sdk-commands deploy --target-content https://worlds-content-server.decentraland.org --multi-scene",
+    "generate-lobby-demos": "node scripts/generate-lobby-demos.mjs",
     "generate-code-images": "node scripts/generate-code-images.mjs",
     "upgrade-sdk:protocol-squad": "npm install --save-dev @dcl/sdk@protocol-squad && npm install --save-dev @dcl/sdk@protocol-squad --workspaces"
   },
