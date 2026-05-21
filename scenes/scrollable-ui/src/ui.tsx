@@ -53,6 +53,11 @@ const SCROLL_MODES = ['vertical', 'horizontal', 'both', 'hidden'] as const
 type ScrollMode = (typeof SCROLL_MODES)[number]
 
 export const userScroll = { x: 0, y: 0 }
+export const uiState = { visible: false }
+
+export function toggleUi() {
+  uiState.visible = !uiState.visible
+}
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(DemoUi)
@@ -73,6 +78,8 @@ const DemoUi = () => {
   const active = TABS.find((t) => t.id === activeId) ?? TABS[0]
   const img = fitContain(active.imageW, active.imageH, IMAGE_BOX_W, IMAGE_BOX_H)
 
+  if (!uiState.visible) return null
+
   return (
     <UiEntity
       uiTransform={{
@@ -92,12 +99,29 @@ const DemoUi = () => {
         }}
         uiBackground={{ color: Color4.create(0.04, 0.06, 0.1, 0.94) }}
       >
-        <Label
-          value="Scrollable UI Demo"
-          fontSize={22}
-          color={Color4.fromHexString('#7cffb2ff')}
-          uiTransform={{ width: '100%', height: 30 }}
-        />
+        <UiEntity
+          uiTransform={{
+            width: '100%',
+            height: 30,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+          <Label
+            value="Scrollable UI Demo"
+            fontSize={22}
+            color={Color4.fromHexString('#7cffb2ff')}
+            uiTransform={{ height: 30 }}
+          />
+          <Button
+            value="✕"
+            variant="secondary"
+            fontSize={14}
+            uiTransform={{ width: 30, height: 26 }}
+            onMouseDown={toggleUi}
+          />
+        </UiEntity>
         <Label
           value="protocol#412 — overflow=scroll, scrollVisible, elementId, scrollPosition, UiScrollResult"
           fontSize={11}
