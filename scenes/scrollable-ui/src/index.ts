@@ -5,7 +5,7 @@ import { setupUi, userScroll } from './ui'
 export function main() {
   const floor = engine.addEntity()
   Transform.create(floor, {
-    position: { x: 24, y: 0.05, z: 8 },
+    position: { x: 8, y: 0.05, z: 8 },
     scale: { x: 16, y: 0.1, z: 16 }
   })
   MeshRenderer.setBox(floor)
