@@ -3,7 +3,6 @@
 // offset (in pixels) back into this component. Read it from any ECS
 // system to react to user-driven scroll changes — e.g., lazy-load rows,
 // fire analytics, or sync external state.
-import { engine, UiScrollResult } from '@dcl/sdk/ecs'
 
 engine.addSystem(() => {
   for (const [entity, result] of engine.getEntitiesWith(UiScrollResult)) {

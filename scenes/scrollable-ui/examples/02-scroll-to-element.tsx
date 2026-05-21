@@ -2,9 +2,6 @@
 // Tag any descendant with `uiTransform.elementId`, then set the parent's
 // `scrollPosition` to that id and the viewport snaps to that child.
 // Ideal for "jump to section" UIs without computing pixel offsets.
-import ReactEcs, { Label, UiEntity } from '@dcl/sdk/react-ecs'
-
-const { useState } = ReactEcs
 
 const ScrollableSections = () => {
   const [target, setTarget] = useState<string | undefined>(undefined)

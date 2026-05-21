@@ -2,8 +2,6 @@
 // viewport. When children exceed its bounds, the user can wheel-scroll
 // inside it. No extra component is needed; the new UiTransform field
 // does all the work.
-import { Color4 } from '@dcl/sdk/math'
-import ReactEcs, { Label, UiEntity } from '@dcl/sdk/react-ecs'
 
 const ScrollableList = () => (
   <UiEntity

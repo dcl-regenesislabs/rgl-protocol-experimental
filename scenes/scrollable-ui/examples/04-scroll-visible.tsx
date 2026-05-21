@@ -5,7 +5,6 @@
 //   'horizontal' — only the horizontal bar
 //   'both'       — both bars
 //   'hidden'     — no bars rendered
-import ReactEcs, { UiEntity } from '@dcl/sdk/react-ecs'
 
 type ScrollVisible = 'vertical' | 'horizontal' | 'both' | 'hidden'
 
