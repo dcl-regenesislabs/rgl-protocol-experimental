@@ -19,7 +19,7 @@ import { runScoped, TestSceneHandle } from '../lobby/tracker'
  * TEST 23: PLAYER PHYSICS
  * Covers every scenario from the player-physics docs:
  *  - applyImpulseToPlayer (vector + direction/magnitude overloads)
- *  - applyKnockbackToPlayer (CONSTANT / LINEAR / INVERSE_SQUARE / attraction)
+ *  - applyKnockbackToPlayer (CONSTANT / LINEAR / attraction)
  *  - applyForceToPlayer + removeForceFromPlayer (wind tunnel)
  *  - applyForceToPlayerForDuration (gust of wind)
  *  - applyRepulsionForceToPlayer (continuous repulsion + vortex/attraction)
@@ -166,24 +166,7 @@ export function setupPlayerPhysicsTest(): TestSceneHandle {
     }
   )
 
-  // 2c. INVERSE_SQUARE falloff
-  const invSource = Vector3.create(baseX + 25, 1, row2Z + 4)
-  const invMarker = engine.addEntity()
-  Transform.create(invMarker, { position: invSource, scale: Vector3.create(0.6, 0.6, 0.6) })
-  MeshRenderer.setSphere(invMarker)
-  Material.setPbrMaterial(invMarker, { albedoColor: Color4.create(0.7, 0.2, 1, 1) })
-  makeKnockbackPlate(
-    baseX + 25,
-    Color4.create(0.6, 0.2, 0.9, 1),
-    'KNOCKBACK\nINVERSE_SQUARE',
-    'mag 80, radius 12',
-    () => {
-      Physics.applyKnockbackToPlayer(invSource, 80, 12, KnockbackFalloff.INVERSE_SQUARE)
-      console.log('[PHYSICS] Knockback INVERSE_SQUARE mag=80 radius=12')
-    }
-  )
-
-  // 2d. Attraction (negative magnitude pulls player toward source)
+  // 2c. Attraction (negative magnitude pulls player toward source)
   const attractSource = Vector3.create(baseX + 35, 1, row2Z + 4)
   const attractMarker = engine.addEntity()
   Transform.create(attractMarker, { position: attractSource, scale: Vector3.create(0.6, 0.6, 0.6) })

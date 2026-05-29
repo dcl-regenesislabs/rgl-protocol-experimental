@@ -2,7 +2,7 @@
   "name": "rgl-protocol-experimental",
   "version": "1.0.0",
   "private": true,
-  "description": "RGL Protocol \u2014 experimental Decentraland scenes deployed to rglprotocol.dcl.eth",
+  "description": "29 May Mobile Friday Playtest",
   "workspaces": [
     "scenes/physics",
     "scenes/avatar-attach-points",
