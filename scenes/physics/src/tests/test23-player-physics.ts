@@ -9,13 +9,9 @@ import {
   ColliderLayer,
   Physics,
   KnockbackFalloff,
-  MaterialTransparencyMode,
-  Tween,
-  TweenSequence,
-  TweenLoop,
-  EasingFunction
+  MaterialTransparencyMode
 } from '@dcl/sdk/ecs'
-import { Vector3, Color4, Quaternion } from '@dcl/sdk/math'
+import { Vector3, Color4 } from '@dcl/sdk/math'
 import { createPlatform, createLabel } from '../utils/helpers'
 import { runScoped, TestSceneHandle } from '../lobby/tracker'
 
@@ -27,7 +23,6 @@ import { runScoped, TestSceneHandle } from '../lobby/tracker'
  *  - applyForceToPlayer + removeForceFromPlayer (wind tunnel)
  *  - applyForceToPlayerForDuration (gust of wind)
  *  - applyRepulsionForceToPlayer (continuous repulsion + vortex/attraction)
- *  - Transform.localToWorldDirection (rotating launcher)
  */
 export function setupPlayerPhysicsTest(): TestSceneHandle {
   return runScoped(() => {
@@ -106,56 +101,6 @@ export function setupPlayerPhysicsTest(): TestSceneHandle {
     console.log('[PHYSICS] Stack pad: two impulses (0,25,0) accumulate -> ~50 up')
   })
   createLabel('STACK PAD\n2 impulses same frame\n(accumulate)\n[PBPhysicsCombinedImpulse]', Vector3.create(baseX + 25, 2.5, row1Z), 1.4)
-
-  // 1d. Rotating launcher (localToWorldDirection)
-  const rotatingLauncher = engine.addEntity()
-  Transform.create(rotatingLauncher, {
-    position: Vector3.create(baseX + 35, 0.5, row1Z),
-    scale: Vector3.create(4, 1, 4)
-  })
-  MeshRenderer.setBox(rotatingLauncher)
-  Material.setPbrMaterial(rotatingLauncher, { albedoColor: Color4.create(0.4, 0.8, 1.0, 1) })
-  TriggerArea.setBox(rotatingLauncher, ColliderLayer.CL_PLAYER)
-  // Spin slowly so the local +Z forward maps to different world directions over time
-  Tween.create(rotatingLauncher, {
-    mode: Tween.Mode.Rotate({
-      start: Quaternion.fromEulerDegrees(0, 0, 0),
-      end: Quaternion.fromEulerDegrees(0, 360, 0)
-    }),
-    duration: 8000,
-    easingFunction: EasingFunction.EF_LINEAR
-  })
-  TweenSequence.create(rotatingLauncher, {
-    loop: TweenLoop.TL_RESTART,
-    sequence: [
-      {
-        mode: Tween.Mode.Rotate({
-          start: Quaternion.fromEulerDegrees(0, 0, 0),
-          end: Quaternion.fromEulerDegrees(0, 360, 0)
-        }),
-        duration: 8000,
-        easingFunction: EasingFunction.EF_LINEAR
-      }
-    ]
-  })
-  // Visual arrow on top to indicate facing
-  const launcherArrow = engine.addEntity()
-  Transform.create(launcherArrow, {
-    parent: rotatingLauncher,
-    position: Vector3.create(0, 1.2, 0.5),
-    scale: Vector3.create(0.2, 0.2, 2.0)
-  })
-  MeshRenderer.setBox(launcherArrow)
-  Material.setPbrMaterial(launcherArrow, { albedoColor: Color4.White() })
-
-  triggerAreaEventsSystem.onTriggerEnter(rotatingLauncher, (result) => {
-    if (result.trigger?.entity !== engine.PlayerEntity) return
-    // Forward in local space (+Z) -> world direction accounting for current rotation
-    const worldDir = Transform.localToWorldDirection(rotatingLauncher, Vector3.create(0, 0.5, 1))
-    Physics.applyImpulseToPlayer(worldDir, 40)
-    console.log(`[PHYSICS] Rotating launcher: localToWorldDirection -> (${worldDir.x.toFixed(2)}, ${worldDir.y.toFixed(2)}, ${worldDir.z.toFixed(2)}) mag 40`)
-  })
-  createLabel('ROTATING LAUNCHER\nlocalToWorldDirection\n(arrow shows facing)\n[PBPhysicsCombinedImpulse]', Vector3.create(baseX + 35, 3.5, row1Z), 1.4)
 
   // =========================================================================
   // ROW 2: KNOCKBACK — applyKnockbackToPlayer (all falloff modes + attraction)
@@ -331,23 +276,7 @@ export function setupPlayerPhysicsTest(): TestSceneHandle {
 
   createLabel('ROW 4: TIMED GUSTS\nPBPhysicsCombinedForce', Vector3.create(baseX - 15, 3, row4Z), 2)
 
-  // 4a. Gust upward — 1.5s
-  const gustEntity = engine.addEntity()
-  Transform.create(gustEntity, {
-    position: Vector3.create(baseX + 5, 0.5, row4Z),
-    scale: Vector3.create(4, 1, 4)
-  })
-  MeshRenderer.setBox(gustEntity)
-  Material.setPbrMaterial(gustEntity, { albedoColor: Color4.create(0.3, 0.9, 0.9, 1) })
-  TriggerArea.setBox(gustEntity, ColliderLayer.CL_PLAYER)
-  triggerAreaEventsSystem.onTriggerEnter(gustEntity, (result) => {
-    if (result.trigger?.entity !== engine.PlayerEntity) return
-    Physics.applyForceToPlayerForDuration(gustEntity, 1.5, Vector3.create(0, 50, 0))
-    console.log('[PHYSICS] Gust UP 1.5s vector (0,50,0)')
-  })
-  createLabel('GUST UP\n1.5s, vec (0,50,0)\nauto-removes\n[PBPhysicsCombinedForce]', Vector3.create(baseX + 5, 2.5, row4Z), 1.4)
-
-  // 4b. Horizontal gust — 2s, dir+mag overload, timer resets on re-enter
+  // 4a. Horizontal gust — 2s, dir+mag overload, timer resets on re-enter
   const horizGust = engine.addEntity()
   Transform.create(horizGust, {
     position: Vector3.create(baseX + 15, 0.5, row4Z),
