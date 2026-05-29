@@ -18,7 +18,10 @@ jobs:
         with:
           node-version: 20.x
       - run: npm install
-      - name: Deploy to rglprotocol.dcl.eth
+      - name: Deploy each scene to rglprotocol.dcl.eth
         env:
           DCL_PRIVATE_KEY: ${{ secrets.DCL_PRIVATE_KEY }}
+        # npm run deploy iterates over every scene in dcl-workspace.json and
+        # deploys each one additively (--multi-scene). The current @dcl/sdk
+        # rejects deploying a multi-project workspace in a single call.
         run: npm run deploy

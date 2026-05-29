@@ -39,13 +39,16 @@ CI deploys automatically on every push to `main`. To deploy manually:
 DCL_PRIVATE_KEY=0x... npm run deploy
 ```
 
-Under the hood this runs:
+Under the hood `npm run deploy` runs `scripts/deploy-all.mjs`, which deploys **each** scene in `dcl-workspace.json` individually and additively:
 
 ```
+# once per scene, from that scene's folder
 sdk-commands deploy \
   --target-content https://worlds-content-server.decentraland.org \
   --multi-scene
 ```
+
+The current `@dcl/sdk` rejects deploying a multi-project workspace in a single call (`DEPLOY_WORKSPACE_NOT_SUPPORTED`), so each scene is deployed on its own. `--multi-scene` makes every deploy *additive* — it publishes into the world without deleting the scenes already there, so the scenes accumulate rather than overwrite one another (except where their parcels overlap).
 
 ### World ACL
 

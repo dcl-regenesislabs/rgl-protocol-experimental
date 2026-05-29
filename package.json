@@ -11,7 +11,7 @@
   "scripts": {
     "start": "sdk-commands start --multi-scene",
     "build": "npm run build --workspaces",
-    "deploy": "sdk-commands deploy --target-content https://worlds-content-server.decentraland.org --multi-scene",
+    "deploy": "node scripts/deploy-all.mjs",
     "upgrade-sdk:protocol-squad": "npm install --save-dev @dcl/sdk@protocol-squad && npm install --save-dev @dcl/sdk@protocol-squad --workspaces"
   },
   "devDependencies": {
