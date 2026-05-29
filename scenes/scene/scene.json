@@ -2,8 +2,8 @@
   "ecs7": true,
   "runtimeVersion": "7",
   "display": {
-    "title": "Scrollable UI Demo",
-    "description": "Demo of the scrollable UI feature proposed in decentraland/protocol#412",
+    "title": "RGL Protocol",
+    "description": "RGL Protocol — experimental scene on rglprotocol.dcl.eth",
     "favicon": "favicon_asset"
   },
   "owner": "dcl-regenesislabs",
@@ -18,9 +18,9 @@
   },
   "scene": {
     "parcels": [
-      "1,0"
+      "0,0"
     ],
-    "base": "1,0"
+    "base": "0,0"
   },
   "spawnPoints": [
     {

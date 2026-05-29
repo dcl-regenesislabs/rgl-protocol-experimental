@@ -1,7 +1,7 @@
 {
-  "name": "scrollable-ui",
+  "name": "scene",
   "version": "1.0.0",
-  "description": "Demo of the scrollable UI proposed in decentraland/protocol#412",
+  "description": "RGL Protocol — experimental scene on rglprotocol.dcl.eth",
   "scripts": {
     "start": "sdk-commands start",
     "build": "sdk-commands build"
