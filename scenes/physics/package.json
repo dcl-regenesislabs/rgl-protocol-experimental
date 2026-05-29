@@ -1,0 +1,13 @@
+{
+  "name": "physics",
+  "version": "1.0.0",
+  "description": "Player-physics demo: impulses, forces, knockback, and repulsion",
+  "scripts": {
+    "start": "sdk-commands start",
+    "build": "sdk-commands build"
+  },
+  "devDependencies": {
+    "@dcl/js-runtime": "7.23.3-26099513813.commit-04270ca",
+    "@dcl/sdk": "next"
+  }
+}

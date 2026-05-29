@@ -2,9 +2,11 @@
   "name": "rgl-protocol-experimental",
   "version": "1.0.0",
   "private": true,
-  "description": "RGL Protocol — experimental Decentraland scenes deployed to rglprotocol.dcl.eth",
+  "description": "RGL Protocol \u2014 experimental Decentraland scenes deployed to rglprotocol.dcl.eth",
   "workspaces": [
-    "scenes/scene"
+    "scenes/physics",
+    "scenes/avatar-attach-points",
+    "scenes/ui-borders"
   ],
   "scripts": {
     "start": "sdk-commands start --multi-scene",
@@ -13,7 +15,7 @@
     "upgrade-sdk:protocol-squad": "npm install --save-dev @dcl/sdk@protocol-squad && npm install --save-dev @dcl/sdk@protocol-squad --workspaces"
   },
   "devDependencies": {
-    "@dcl/sdk": "7.22.6-25007982108.commit-83012ab"
+    "@dcl/sdk": "next"
   },
   "engines": {
     "node": ">=16.0.0",

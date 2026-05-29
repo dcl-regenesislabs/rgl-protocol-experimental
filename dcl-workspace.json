@@ -1,5 +1,7 @@
 {
   "folders": [
-    { "path": "scenes/scene" }
+    { "path": "scenes/physics" },
+    { "path": "scenes/avatar-attach-points" },
+    { "path": "scenes/ui-borders" }
   ]
 }

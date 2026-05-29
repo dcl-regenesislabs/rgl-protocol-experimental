@@ -1,0 +1,13 @@
+{
+  "name": "ui-borders",
+  "version": "1.0.0",
+  "description": "Demo of UiTransform border features (color, width, radius)",
+  "scripts": {
+    "start": "sdk-commands start",
+    "build": "sdk-commands build"
+  },
+  "devDependencies": {
+    "@dcl/js-runtime": "next",
+    "@dcl/sdk": "next"
+  }
+}

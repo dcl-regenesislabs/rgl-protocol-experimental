@@ -1,0 +1,45 @@
+{
+  "ecs7": true,
+  "runtimeVersion": "7",
+  "display": {
+    "title": "Avatar Attach Points",
+    "description": "Markers attached to all 26 AvatarAnchorPointType anchor points on the player's avatar",
+    "favicon": "favicon_asset"
+  },
+  "owner": "dcl-regenesislabs",
+  "contact": {
+    "name": "dcl-regenesislabs",
+    "email": ""
+  },
+  "main": "bin/index.js",
+  "tags": [],
+  "worldConfiguration": {
+    "name": "rglprotocol.dcl.eth"
+  },
+  "scene": {
+    "parcels": [
+      "5,0"
+    ],
+    "base": "5,0"
+  },
+  "spawnPoints": [
+    {
+      "name": "spawn1",
+      "default": true,
+      "position": {
+        "x": [6, 10],
+        "y": [0, 0],
+        "z": [6, 10]
+      },
+      "cameraTarget": {
+        "x": 8,
+        "y": 1,
+        "z": 8
+      }
+    }
+  ],
+  "featureToggles": {
+    "voiceChat": "enabled",
+    "portableExperiences": "enabled"
+  }
+}

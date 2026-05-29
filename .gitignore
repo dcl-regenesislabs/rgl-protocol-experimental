@@ -9,3 +9,6 @@ yarn-debug.log*
 yarn-error.log*
 .claude/
 .deploy-key*
+
+# auto-generated per-scene SDK context docs (root dclcontext/ is the tracked copy)
+scenes/*/dclcontext/

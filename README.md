@@ -3,7 +3,7 @@
 A multi-scene Decentraland world for demonstrating experimental Decentraland **protocol** features as they land in the SDK.
 
 - **World:** [`rglprotocol.dcl.eth`](https://decentraland.org/play/?realm=rglprotocol.dcl.eth)
-- **SDK:** `@dcl/sdk` pinned to the `protocol-squad` build (see [SDK pinning](#sdk-pinning))
+- **SDK:** `@dcl/sdk` tracking the `next` tag (see [SDK pinning](#sdk-pinning))
 - **Runtime:** SDK7
 
 ## Repo layout
@@ -16,7 +16,9 @@ A multi-scene Decentraland world for demonstrating experimental Decentraland **p
 │   ├── ci.yml                   # build verification on every push/PR
 │   └── deploy.yml               # deploys to rglprotocol.dcl.eth on push to main
 └── scenes/
-    └── scene/                   # parcel 0,0
+    ├── physics/                 # parcels 0,0–4,5 — player-physics demo
+    ├── avatar-attach-points/    # parcel 5,0 — all 26 avatar anchor points
+    └── ui-borders/              # parcel 6,0 — UiTransform border features
 ```
 
 > Previous demos (`lobby`, `scrollable-ui`) are archived on the `archive/lobby-scrollable-ui` branch.
@@ -65,16 +67,18 @@ npx @dcl/sdk-commands world-acl grant <deployer-address> --world-name rglprotoco
    - Set `scene.parcels` / `scene.base` to a free parcel.
    - Fill in `display.title`, `display.description`, and `spawnPoints[0].position`.
 3. Add the path to `dcl-workspace.json` under `folders` and to `package.json` `workspaces`.
-4. Pin the SDK in the new scene's `package.json` to match the rest of the workspace (`7.22.6-…commit-83012ab`).
+4. Pin the SDK in the new scene's `package.json` to match the rest of the workspace (`@dcl/sdk` / `@dcl/js-runtime` set to `next`).
 
 `npm install` at the root will pick up the new workspace automatically.
 
 ## SDK pinning
 
-We pin `@dcl/sdk` to the exact `protocol-squad` build rather than `latest`/`next` because the demos depend on protocol changes that aren't on `main` yet. Bumping is intentional:
+`@dcl/sdk` and `@dcl/js-runtime` track the `next` dist-tag across the root and every scene's `package.json`, so the whole workspace builds against the same unreleased protocol surface (currently resolves to `7.23.3-…commit-04270ca`). The demos depend on protocol features that aren't on stable yet, which is why we track `next` rather than `latest`. Keep all `package.json` files on the same spec so npm hoists a single copy — mixing a stable pin with a prerelease tag makes npm install a second SDK nested per scene.
+
+To target a different channel (e.g. the `protocol-squad` build), re-pin every `package.json` to that tag and reinstall:
 
 ```bash
 npm run upgrade-sdk:protocol-squad
 ```
 
-This refreshes the SDK in both the root and every scene's `package.json`, then re-pins to whatever exact version `protocol-squad` resolves to at the time.
+This refreshes the SDK in both the root and every scene's `package.json`.

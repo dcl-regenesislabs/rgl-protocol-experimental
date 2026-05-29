@@ -2,8 +2,8 @@
   "ecs7": true,
   "runtimeVersion": "7",
   "display": {
-    "title": "RGL Protocol",
-    "description": "RGL Protocol — experimental scene on rglprotocol.dcl.eth",
+    "title": "Scene UI Borders",
+    "description": "Demo of UiTransform border features: borderColor, borderWidth, borderRadius (uniform, per-side, per-corner, percentage)",
     "favicon": "favicon_asset"
   },
   "owner": "dcl-regenesislabs",
@@ -18,18 +18,18 @@
   },
   "scene": {
     "parcels": [
-      "0,0"
+      "6,0"
     ],
-    "base": "0,0"
+    "base": "6,0"
   },
   "spawnPoints": [
     {
       "name": "spawn1",
       "default": true,
       "position": {
-        "x": [0, 3],
+        "x": [6, 10],
         "y": [0, 0],
-        "z": [0, 3]
+        "z": [6, 10]
       },
       "cameraTarget": {
         "x": 8,

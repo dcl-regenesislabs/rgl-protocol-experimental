@@ -1,0 +1,13 @@
+{
+  "name": "avatar-attach-points",
+  "version": "1.0.0",
+  "description": "Markers attached to all 26 AvatarAnchorPointType anchor points",
+  "scripts": {
+    "start": "sdk-commands start",
+    "build": "sdk-commands build"
+  },
+  "devDependencies": {
+    "@dcl/js-runtime": "next",
+    "@dcl/sdk": "next"
+  }
+}
