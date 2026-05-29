@@ -2,7 +2,7 @@
   "ecs7": true,
   "runtimeVersion": "7",
   "display": {
-    "title": "Player Physics Demo",
+    "title": "29 May Mobile Friday Playtest",
     "description": "Player-physics demo: impulses, forces, knockback, and repulsion",
     "favicon": "favicon_asset"
   },

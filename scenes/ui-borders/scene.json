@@ -2,7 +2,7 @@
   "ecs7": true,
   "runtimeVersion": "7",
   "display": {
-    "title": "Scene UI Borders",
+    "title": "29 May Mobile Friday Playtest",
     "description": "Demo of UiTransform border features: borderColor, borderWidth, borderRadius (uniform, per-side, per-corner, percentage)",
     "favicon": "favicon_asset"
   },

@@ -1,3 +1,5 @@
+import { engine, UiCanvasInformation } from '@dcl/sdk/ecs'
+import { isMobile } from '@dcl/sdk/platform'
 import ReactEcs, { UiEntity, Label, type JSX } from '@dcl/sdk/react-ecs'
 import { Color4 } from '@dcl/sdk/math'
 
@@ -376,16 +378,52 @@ const NestedBorder = (): JSX.Element => (
   </UiEntity>
 )
 
+// Mobile is the only platform with hardware insets (notch / home indicator)
+// that overlap the canvas, so it's the only platform where the safe-area
+// inset is applied. On desktop the chat/minimap chrome sits outside the UI
+// canvas, so shrinking the HUD would just waste pixels.
+//
+// `UiCanvasInformation.interactableArea` is the renderer-reported BorderRect
+// (in pixels) of the region not covered by platform/hardware UI. We render an
+// absolute UiEntity with matching top/left/right/bottom so children laid out
+// against it stay clear of the unsafe edges.
+const SafeArea = ({ children }: { children?: ReactEcs.JSX.ReactNode }): JSX.Element => {
+  if (!isMobile()) {
+    return (
+      <UiEntity uiTransform={{ width: '100%', height: '100%', positionType: 'absolute' }}>
+        {children}
+      </UiEntity>
+    )
+  }
+  const insets = UiCanvasInformation.getOrNull(engine.RootEntity)?.interactableArea
+  const top = insets?.top ?? 0
+  const left = insets?.left ?? 0
+  const right = insets?.right ?? 0
+  const bottom = insets?.bottom ?? 0
+  return (
+    <UiEntity
+      uiTransform={{
+        positionType: 'absolute',
+        position: { top, left, right, bottom }
+      }}
+    >
+      {children}
+    </UiEntity>
+  )
+}
+
 export const ui = (): JSX.Element => (
   <UiEntity uiTransform={{ width: '100%', height: '100%' }}>
-    <UniformBorder />
-    <PerSideColor />
-    <PerSideWidth />
-    <PerCornerRadius />
-    <FullyMixed />
-    <RadiusNoBorder />
-    <PercentWidth />
-    <Circle />
-    <NestedBorder />
+    <SafeArea>
+      <UniformBorder />
+      <PerSideColor />
+      <PerSideWidth />
+      <PerCornerRadius />
+      <FullyMixed />
+      <RadiusNoBorder />
+      <PercentWidth />
+      <Circle />
+      <NestedBorder />
+    </SafeArea>
   </UiEntity>
 )

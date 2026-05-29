@@ -2,7 +2,7 @@
   "ecs7": true,
   "runtimeVersion": "7",
   "display": {
-    "title": "Avatar Attach Points",
+    "title": "29 May Mobile Friday Playtest",
     "description": "Markers attached to all 26 AvatarAnchorPointType anchor points on the player's avatar",
     "favicon": "favicon_asset"
   },

@@ -6,7 +6,8 @@ import {
   TextShape,
   Billboard,
   AvatarAttach,
-  AvatarAnchorPointType
+  AvatarAnchorPointType,
+  type Entity
 } from '@dcl/sdk/ecs'
 import { Color3, Color4, Vector3 } from '@dcl/sdk/math'
 
@@ -85,6 +86,12 @@ export function main() {
   })
   Billboard.create(title)
 
+  // Every visual entity attached to the avatar, paired with its normal scale.
+  // We toggle these between their real scale and zero so the markers only show
+  // while the player is standing inside the scene. (VisibilityComponent is not
+  // used because it does not hide TextShape labels — scaling does.)
+  const attachedVisuals: { entity: Entity; scale: Vector3 }[] = []
+
   // Attach a marker + label to every anchor point on the local player's avatar.
   ANCHOR_POINTS.forEach((anchor, i) => {
     const color = hueColor(i, ANCHOR_POINTS.length)
@@ -96,11 +103,12 @@ export function main() {
     AvatarAttach.create(attach, { anchorPointId: anchor.type })
 
     // Small marker cube sitting right on the anchor.
+    const markerScale = Vector3.create(0.07, 0.07, 0.07)
     const marker = engine.addEntity()
     Transform.create(marker, {
       parent: attach,
       position: Vector3.Zero(),
-      scale: Vector3.create(0.07, 0.07, 0.07)
+      scale: markerScale
     })
     MeshRenderer.setBox(marker)
     Material.setPbrMaterial(marker, {
@@ -110,10 +118,12 @@ export function main() {
     })
 
     // Billboard label naming the anchor, floating just above the marker.
+    const labelScale = Vector3.One()
     const label = engine.addEntity()
     Transform.create(label, {
       parent: attach,
-      position: Vector3.create(0, 0.12, 0)
+      position: Vector3.create(0, 0.12, 0),
+      scale: labelScale
     })
     TextShape.create(label, {
       text: anchor.name,
@@ -123,7 +133,33 @@ export function main() {
       outlineColor: Color3.Black()
     })
     Billboard.create(label)
+
+    attachedVisuals.push({ entity: marker, scale: markerScale }, { entity: label, scale: labelScale })
   })
 
   console.log(`[ATTACH] Attached markers to all ${ANCHOR_POINTS.length} avatar anchor points`)
+
+  // Avatar-attached entities follow the player everywhere, including out of this
+  // scene. Watch the player's position and only show the markers while they are
+  // inside the scene bounds (a single 16x16 parcel, scene-local 0..16 on x/z).
+  const SCENE_MIN = 0
+  const SCENE_MAX = 16
+  let markersVisible: boolean | undefined = undefined
+
+  function setMarkersVisible(visible: boolean) {
+    if (visible === markersVisible) return
+    markersVisible = visible
+    for (const { entity, scale } of attachedVisuals) {
+      Transform.getMutable(entity).scale = visible ? scale : Vector3.Zero()
+    }
+    console.log(`[ATTACH] markers ${visible ? 'shown (player inside scene)' : 'hidden (player left scene)'}`)
+  }
+
+  engine.addSystem(() => {
+    const playerTransform = Transform.getOrNull(engine.PlayerEntity)
+    if (!playerTransform) return
+    const { x, z } = playerTransform.position
+    const inside = x >= SCENE_MIN && x <= SCENE_MAX && z >= SCENE_MIN && z <= SCENE_MAX
+    setMarkersVisible(inside)
+  })
 }
